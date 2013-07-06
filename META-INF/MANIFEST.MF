@@ -1,2 +1,2 @@
 Main-Class: JavaparserToHS
-Class-Path: java-parser-1.0.8.jar
+Class-Path: javaparser-1.0.8.jar
