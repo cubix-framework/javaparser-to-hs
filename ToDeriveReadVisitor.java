@@ -363,7 +363,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("MethodDeclaration", wrap("MethodDecl", special(f("Modifiers"), "printModifiers"), list(f("TypeParameters")), special(f("Type"), "printVoidableType"),
                                               id(f("Name")), list(f("Parameters")), list(special(f("Throws"), "printExceptionType")),
                                               wrap("MethodBody", maybe(f("Body")))));
-                put("Parameter", wrap("FormalParam", special(f("Modifiers"), "printModifiers"), f("Type"), f("VarArgs"), f("Id")));
+                put("Parameter", wrap("FormalParam", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), f("VarArgs"), f("Id")));
                 put("InitializerDeclaration", wrap("InitDecl", f("Static"), f("Block")));
                 put("PrimitiveType", wrap("PrimType", special(f("Type"), "printPrimitive")));
                 put("ArrayAccessExpr", wrap("ArrayAccess", wrap("ArrayIndex", f("Name"), f("Index"))));
@@ -381,7 +381,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("_SuperFieldAccess", wrap("SuperFieldAccess", id(f("Field"))));
                 put("InstanceOfExpr", wrap("InstanceOf", f("Expr"), f("Type")));
                 put("BooleanLiteralExpr", wrap("Lit", wrap("Boolean", f("Value"))));
-                put("_InstanceCreation", wrap("InstanceCreation", list(special(f("TypeArgs"), "printTypeArg")), f("Type"), list(f("Args")), maybelist(f("AnonymousClassBody"))));
+                put("_InstanceCreation", wrap("InstanceCreation", list(special(f("TypeArgs"), "printTypeArg")), f("Type"), list(f("Args")), maybe(wrap("ClassBody", list(special(f("AnonymousClassBody"), "printDecl"))))));
                 put("_QualInstanceCreation", wrap("QualInstanceCreation", f("Scope"), list(special(f("TypeArgs"), "printTypeArg")), special(f("Type"), "printClassTypeID"), list(f("Args")), maybelist(f("AnonymousClassBody"))));
                 put("VariableDeclarationExpr", wrap("LocalVars", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), list(f("Vars"))));
                 put("_ForLocalVars", wrap("ForLocalVars", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), list(f("Vars"))));
@@ -443,7 +443,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 output(")");
             } else {
                 output("(MemberClassDecl ");
-                n.accept(this, null);
+                dispatchVisit(n, "_ClassDeclaration");
                 output(")");
             }
         } else if(n instanceof EnumDeclaration) {
@@ -463,7 +463,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             n.accept(this, null);
         } else {
             output("(MemberDecl ");
-            n.accept(this, null);
+            printMemberDecl(n);
             output(")");
         }
     }
@@ -975,14 +975,20 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     public void visit(PrimitiveType n, Object _) { genericVisit(n); }
 
     public void visit(ReferenceType n, Object _) {
-        for(int i = 0; i < n.getArrayCount(); i++) {
-            output("(ArrayType ");
-        }
-
-        n.getType().accept(this, null);
-        
-        for(int i = 0; i < n.getArrayCount(); i++) {
+        if(n.getArrayCount() == 0) {
+            output("(ClassRefType ");
+            n.getType().accept(this, null);
             output(")");
+        } else {
+            for(int i = 0; i < n.getArrayCount(); i++) {
+                output("(ArrayType ");
+            }
+
+            printType(n.getType());
+        
+            for(int i = 0; i < n.getArrayCount(); i++) {
+                output(")");
+            }
         }
     }
 
