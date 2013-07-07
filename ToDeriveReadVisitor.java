@@ -671,7 +671,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             n.accept(this, null);
         } else {
             output("(BlockStmt ");
-            n.accept(this, null);
+            printStmt(n);
             output(")");
         }
     }
