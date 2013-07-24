@@ -1056,7 +1056,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(IntegerLiteralExpr n, Object _) {
         output("(Lit (Int ");
-        output(n.getValue());
+        output(NumberUtils.createNumber(n.getValue()).toString());
         output("))");
     }
 
@@ -1068,13 +1068,13 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(IntegerLiteralMinValueExpr n, Object _) {
         output("(Lit (Int ");
-        output(n.getValue());
+        output(NumberUtils.createNumber(n.getValue()).toString());
         output("))");
     }
 
     public void visit(LongLiteralMinValueExpr n, Object _) {
         output("(Lit (Int ");
-        output(n.getValue());
+        output(NumberUtils.createNumber(n.getValue()).toString());
         output("))");
     }
 
