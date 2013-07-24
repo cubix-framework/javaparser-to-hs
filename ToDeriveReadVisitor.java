@@ -1059,19 +1059,19 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     }
 
     public void visit(LongLiteralExpr n, Object _) {
-        output("(Lit (Double ");
+        output("(Lit (Int ");
         output(n.getValue());
         output("))");
     }
 
     public void visit(IntegerLiteralMinValueExpr n, Object _) {
-        output("(Lit (Double ");
+        output("(Lit (Int ");
         output(n.getValue());
         output("))");
     }
 
     public void visit(LongLiteralMinValueExpr n, Object _) {
-        output("(Lit (Long ");
+        output("(Lit (Int ");
         output(n.getValue());
         output("))");
     }
