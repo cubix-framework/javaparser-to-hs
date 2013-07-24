@@ -96,6 +96,8 @@ import java.lang.reflect.Method;
 import java.io.*;
 import java.util.*;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import japa.parser.*;
 import japa.parser.ast.*;
 import japa.parser.ast.expr.*;
@@ -1060,7 +1062,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(LongLiteralExpr n, Object _) {
         output("(Lit (Int ");
-        output(n.getValue());
+        output(NumberUtils.createNumber(n.getValue()).toString());
         output("))");
     }
 

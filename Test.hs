@@ -2,6 +2,8 @@
 
 import Control.Monad ( liftM )
 
+import Data.List ( find )
+
 import Language.Java.Syntax
 import Language.Java.Pretty
 import Language.Java.Lexer
@@ -11,6 +13,8 @@ import System.Exit
 import System.IO
 import System.IO.Temp
 import System.Process
+
+--------------------------------------------------------------------------------
 
 deriving instance Read CompilationUnit
 deriving instance Read PackageDecl
@@ -73,11 +77,15 @@ parse path = withSystemTempFile "parse" $ \tmp h -> do
 {-
 Parsing can rearrange modifiers, pretty-printing can insert parens, annotations are dropped. What do we do? Remove them!
 -}
-lexicallyEqual :: [Token] -> [Token] -> Bool
-lexicallyEqual xs ys = let xs' = [x | x <- removeAnno xs, not (x `elem` unstableTokens)]
-                           ys' = [y | y <- removeAnno ys, not (y `elem` unstableTokens)] in
-                       xs' == ys'
+lexicalDifference :: [Token] -> [Token] -> Maybe (Token, Token)
+lexicalDifference xs ys = let xs' = [x | x <- removeAnno xs, not (x `elem` unstableTokens)]
+                              ys' = [y | y <- removeAnno ys, not (y `elem` unstableTokens)] in
+                          find (substantiveDiff) (zip xs' ys')
   where
+    substantiveDiff (IntTok x, LongTok y) = x /= y
+    substantiveDiff (LongTok x, IntTok y) = x /= y
+    substantiveDiff (x, y)                = x /= y
+
     removeAnno ts = rAnn False 0 ts
 
     rAnn True 0 ts                = rAnn False 0 ts
@@ -116,8 +124,7 @@ main = do fil <- liftM head $ getArgs
           case res of
                Left _     -> exitFailure
                Right tree -> let reread = map unL $ lexer $ show $ pretty tree in
-                             if lexicallyEqual reread origStream then
-                               return ()
-                             else
-                               do putStrLn "Different!"
-                                  exitFailure
+                             case lexicalDifference reread origStream of
+                               Nothing -> return ()
+                               Just x  -> do putStrLn $ "Different: " ++ show x
+                                             exitFailure

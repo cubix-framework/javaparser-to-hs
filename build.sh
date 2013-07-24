@@ -1,8 +1,8 @@
 #!/bin/bash
 
-javac -cp javaparser-1.0.8.jar:. *.java
+javac -cp javaparser-1.0.8.jar:commons-lang3-3.1.jar:. *.java
 ./makejar.sh
-ghc Main.hs
+ghc Test.hs
 
 rm *.class
 rm *.hi
