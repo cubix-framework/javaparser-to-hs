@@ -93,6 +93,7 @@
  */
 
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.io.*;
 import java.util.*;
 
@@ -420,6 +421,35 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     private void genericVisit(Object n) {
         String name = n.getClass().getSimpleName();
         dispatchVisit(n, name);
+    }
+
+
+    /*
+     * NumberUtils.createNumber does most of the work in reading
+     * the many formats integers may be written in in Java. However,
+     * it still fails some cases -- in particular, it errors on 8-digit
+     * hex ints like 0x80000000 instead of returning long or wrapping to negative.
+     *
+     * This was reported in https://issues.apache.org/jira/browse/LANG-747
+     *
+     * Some code adapated from original definition of createNumber
+     */
+    private Number parseJavaInt(String str) {
+        // Need to deal with all possible hex prefixes here
+        final String[] hex_prefixes = {"0x", "0X", "-0x", "-0X", "#", "-#"};
+        int pfxLen = 0;
+        for(final String pfx : hex_prefixes) {
+            if (str.startsWith(pfx)) {
+                pfxLen += pfx.length();
+                break;
+            }
+        }
+        if (pfxLen > 0) { // we have a hex number
+            String hexDigits = str.substring(pfxLen);
+            return new BigInteger(hexDigits, 16);
+        }
+
+        return NumberUtils.createNumber(str);
     }
 
     public void printIdent(Object o) { printIdent((String)o); }
@@ -1068,13 +1098,13 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(IntegerLiteralExpr n, Object _) {
         output("(Lit (Int ");
-        output(NumberUtils.createNumber(n.getValue()).toString());
+        output(Integer.toString(parseJavaInt(n.getValue()).intValue()));
         output("))");
     }
 
     public void visit(LongLiteralExpr n, Object _) {
         output("(Lit (Int ");
-        output(NumberUtils.createNumber(n.getValue()).toString());
+        output(Long.toString(parseJavaInt(n.getValue()).longValue()));
         output("))");
     }
 
