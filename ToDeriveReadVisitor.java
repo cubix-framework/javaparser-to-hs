@@ -630,6 +630,8 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void printConstructorBody(BlockStmt n) {
         List<Statement> l = n.getStmts();
+        if(l == null)
+            l = new ArrayList<Statement>();
         List<Statement> lNormalized;
 
         output("(ConstructorBody ");
@@ -1086,7 +1088,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(DoubleLiteralExpr n, Object _) {
         output("(Lit (Double ");
-        output(n.getValue());
+        output(NumberUtils.createNumber(n.getValue()).toString());
         output("))");
     }
 
