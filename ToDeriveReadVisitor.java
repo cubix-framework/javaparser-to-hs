@@ -527,7 +527,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
         }
         if(ModifierSet.isSynchronized(m)) {
             output(sep); sep = ", ";
-            output("Synchronized");
+            output("Synchronised"); // "Synchronized" refers to the type of statement
         }
         if(ModifierSet.isTransient(m)) {
             output(sep); sep = ", ";
