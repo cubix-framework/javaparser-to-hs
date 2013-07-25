@@ -403,7 +403,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("_IfThen", wrap("IfThen", f("Condition"), special(f("ThenStmt"), "printStmt")));
                 put("_IfThenElse", wrap("IfThenElse", f("Condition"), special(f("ThenStmt"), "printStmt"), special(f("ElseStmt"), "printStmt")));
                 put("WhileStmt", wrap("While", f("Condition"), special(f("Body"), "printStmt")));
-                put("DoStmt", wrap("While", special(f("Body"), "printStmt"), f("Condition")));
+                put("DoStmt", wrap("Do", special(f("Body"), "printStmt"), f("Condition")));
                 put("ThrowStmt", wrap("Throw", f("Expr")));
                 put("SynchronizedStmt", wrap("Synchronized", f("Expr"), f("Block")));
                 put("ForStmt", wrap("BasicFor", maybe(special(f("Init"), "printForInit")), maybe(f("Compare")), maybe(list(f("Update"))), special(f("Body"), "printStmt")));
