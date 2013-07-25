@@ -984,13 +984,19 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             n.getType().accept(this, null);
             output(")");
         } else {
+            String sep = "";
             for(int i = 0; i < n.getArrayCount(); i++) {
+                output(sep);
+                sep = "(RefType ";
                 output("(ArrayType ");
             }
 
             printType(n.getType());
-        
+
+            sep = "";
             for(int i = 0; i < n.getArrayCount(); i++) {
+                output(sep);
+                sep = ")";
                 output(")");
             }
         }
@@ -1232,7 +1238,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(TypeDeclarationStmt n, Object _) {
         output("(LocalClass ");
-        dispatchVisit(n, "_ClassDeclaration");
+        dispatchVisit(n.getTypeDeclaration(), "_ClassDeclaration");
         output(")");
     }
 
