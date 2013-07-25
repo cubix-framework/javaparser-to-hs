@@ -351,11 +351,11 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                                               special(f("Modifiers"), "printModifiers"), id(f("Name")), list(f("TypeParameters")),
                                               maybelist(wrap("ClassRefType", f("Extends"))), list(wrap("ClassRefType", f("Implements"))),
                                               wrap("ClassBody", list(special(f("Members"), "printDecl")))));
-                put("EnumDeclaration", wrap("ClassTypeDecl", wrap("EnumDecl",
-                                                                  special(f("Modifiers"), "printModifiers"), id(f("Name")),
-                                                                  list(wrap("ClassRefType", f("Implements"))),
-                                                                  wrap("EnumBody", list(f("Entries")),
-                                                                       maybe(wrap("ClassBody", list(special(f("Members"), "printDecl"))))))));
+                put("_EnumDeclaration", wrap("EnumDecl",
+                                             special(f("Modifiers"), "printModifiers"), id(f("Name")),
+                                             list(wrap("ClassRefType", f("Implements"))),
+                                             wrap("EnumBody", list(f("Entries")),
+                                             list(special(f("Members"), "printDecl")))));
                 put("EnumConstantDeclaration", wrap("EnumConstant", id(f("Name")), list(f("Args")), maybe(wrap("ClassBody", list(special(f("ClassBody"), "printDecl"))))));
                 put("FieldDeclaration", wrap("FieldDecl", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), list(f("Variables"))));
                 put("VariableDeclarator", wrap("VarDecl", f("Id"), maybe(special(f("Init"), "printVarInit"))));
@@ -450,7 +450,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             }
         } else if(n instanceof EnumDeclaration) {
             output("(MemberClassDecl ");
-            n.accept(this, null);
+            dispatchVisit(n, "_EnumDeclaration");
             output(")");
         } else {
             throw new IllegalArgumentException("Unsupported node passed to printMemberDecl");
@@ -911,7 +911,11 @@ public class ToDeriveReadVisitor implements VoidVisitor {
         }
     }
 
-    public void visit(EnumDeclaration n, Object _) { genericVisit(n); }
+    public void visit(EnumDeclaration n, Object _) {
+        output("(ClassTypeDecl ");
+        dispatchVisit(n, "_EnumDeclaration");
+        output(")");
+    }
 
     public void visit(EmptyTypeDeclaration n, Object _) { fail("EmptyTypeDeclaration"); }
 
