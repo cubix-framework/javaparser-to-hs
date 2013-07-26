@@ -3,9 +3,13 @@
  * the "deriving Read" forma for the Java AST used by the language-java package
  * for Haskell.
  *
- * A small number of constructs, custom annotations and empty declarations,
- * are unsupported. Comments and annotations are dropped.
- *
+ * Issues:
+ *   Custom annotations unsupported
+ *   Empty declarations unspported
+ *   Unicode unsupported
+ *   Comments dropped
+ *   Annotations dropped
+ * 
  * NodeField and its descendants are used to create a language specifying how
  * to print nodes; these are used to handle most sorts. See the definition of "metaInf"
  * below. When a sort in the javaparser AST corresponds to multiple sorts in the
@@ -344,10 +348,10 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("ImportDeclaration", wrap("ImportDecl", f("Static"), special(f("Name"), "printName"), f("Asterisk")));
                 put("PackageDeclaration", wrap("PackageDecl", special(f("Name"), "printName")));
                 put("TypeParameter", wrap("TypeParam", id(f("Name")), list(wrap("ClassRefType", f("TypeBound")))));
-                put("_InterfaceDeclaration", wrap("InterfaceTypeDecl", wrap("InterfaceDecl",
+                put("_InterfaceDeclaration", wrap("InterfaceDecl",
                                                   special(f("Modifiers"), "printModifiers"), id(f("Name")), list(f("TypeParameters")),
                                                   list(wrap("ClassRefType", f("Implements"))),
-                                                  wrap("InterfaceBody", list(special(f("Members"), "printMemberDecl"))))));
+                                                  wrap("InterfaceBody", list(special(f("Members"), "printMemberDecl")))));
                 put("_ClassDeclaration", wrap("ClassDecl",
                                               special(f("Modifiers"), "printModifiers"), id(f("Name")), list(f("TypeParameters")),
                                               maybelist(wrap("ClassRefType", f("Extends"))), list(wrap("ClassRefType", f("Implements"))),
@@ -471,7 +475,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
         } else if(n instanceof ClassOrInterfaceDeclaration) {
             if(((ClassOrInterfaceDeclaration)n).isInterface()) {
                 output("(MemberInterfaceDecl ");
-                n.accept(this, null);
+                dispatchVisit(n, "_InterfaceDeclaration");
                 output(")");
             } else {
                 output("(MemberClassDecl ");
@@ -933,7 +937,9 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
     public void visit(ClassOrInterfaceDeclaration n, Object _) {
         if(n.isInterface()) {
+            output("(InterfaceTypeDecl ");
             dispatchVisit(n, "_InterfaceDeclaration");
+            output(")");
         } else {
             output("(ClassTypeDecl ");
             dispatchVisit(n, "_ClassDeclaration");
