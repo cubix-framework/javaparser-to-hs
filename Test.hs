@@ -16,60 +16,10 @@ import System.Process
 
 --------------------------------------------------------------------------------
 
-deriving instance Read CompilationUnit
-deriving instance Read PackageDecl
-deriving instance Read ImportDecl
-deriving instance Read TypeDecl
-deriving instance Read ClassDecl
-deriving instance Read ClassBody
-deriving instance Read EnumBody
-deriving instance Read EnumConstant
-deriving instance Read InterfaceDecl
-deriving instance Read InterfaceBody
-deriving instance Read Decl
-deriving instance Read MemberDecl
-deriving instance Read VarDecl
-deriving instance Read VarDeclId
-deriving instance Read VarInit
-deriving instance Read FormalParam
-deriving instance Read MethodBody
-deriving instance Read ConstructorBody
-deriving instance Read ExplConstrInv
-deriving instance Read Modifier
-deriving instance Read Annotation
-deriving instance Read ElementValue
-deriving instance Read Block
-deriving instance Read BlockStmt
-deriving instance Read Stmt
-deriving instance Read Catch
-deriving instance Read SwitchBlock
-deriving instance Read SwitchLabel
-deriving instance Read ForInit
-deriving instance Read Exp
-deriving instance Read Literal
-deriving instance Read Op
-deriving instance Read AssignOp
-deriving instance Read Lhs
-deriving instance Read ArrayIndex
-deriving instance Read FieldAccess
-deriving instance Read MethodInvocation
-deriving instance Read ArrayInit
-deriving instance Read Type
-deriving instance Read RefType
-deriving instance Read ClassType
-deriving instance Read TypeArgument
-deriving instance Read WildcardBound
-deriving instance Read PrimType
-deriving instance Read TypeParam
-deriving instance Read Ident
-deriving instance Read Name
-
-
-
 parse :: FilePath -> IO (Either String CompilationUnit)
 parse path = withSystemTempFile "parse" $ \tmp h -> do
                          hClose h
-                         exitCode <- system $ "java -jar javaparser-to-hs.jar " ++ (show path) ++ " " ++ (show tmp)
+                         exitCode <- system $ "java -jar /Users/jkoppel/tarski/tools/javaparser-to-hs/javaparser-to-hs.jar " ++ (show path) ++ " " ++ (show tmp)
                          case exitCode of
                            ExitFailure _ -> return $ Left "parse failed"
                            ExitSuccess   -> liftM (Right . read) $ readFile tmp
@@ -80,10 +30,12 @@ Parsing can rearrange modifiers, pretty-printing can insert parens, annotations 
 lexicalDifference :: [Token] -> [Token] -> Maybe (Token, Token)
 lexicalDifference xs ys = let xs' = [x | x <- removeAnno xs, not (x `elem` unstableTokens)]
                               ys' = [y | y <- removeAnno ys, not (y `elem` unstableTokens)] in
-                          find (substantiveDiff) (zip xs' ys')
+                          find substantiveDiff (zip xs' ys')
   where
     substantiveDiff (IntTok x, LongTok y) = x /= y
     substantiveDiff (LongTok x, IntTok y) = x /= y
+    substantiveDiff (FloatTok x, DoubleTok y) = x /= y
+    substantiveDiff (DoubleTok x, FloatTok y) = x /= y
     substantiveDiff (x, y)                = x /= y
 
     removeAnno ts = rAnn False 0 ts
@@ -93,7 +45,7 @@ lexicalDifference xs ys = let xs' = [x | x <- removeAnno xs, not (x `elem` unsta
     rAnn True n (OpenParen : ts)  = rAnn True (n+1) ts
     rAnn True n (t:ts)            = rAnn True n ts
 
-    rAnn False n (Op_AtSign : OpenParen : ts) = rAnn True 1 ts
+    rAnn False n (Op_AtSign : t : OpenParen : ts) = rAnn True (n+1) ts
     rAnn False n (Op_AtSign : t : ts)         = rAnn False n ts
     rAnn False n (t : ts)                     = t : rAnn False n ts
     rAnn False 0 []                           = []
@@ -111,6 +63,8 @@ lexicalDifference xs ys = let xs' = [x | x <- removeAnno xs, not (x `elem` unsta
                       , KW_Volatile
                       , KW_Native
                       , KW_Synchronized
+                      , Comma
+                      , SemiColon
                       ]
 
 
@@ -127,4 +81,5 @@ main = do fil <- liftM head $ getArgs
                              case lexicalDifference reread origStream of
                                Nothing -> return ()
                                Just x  -> do putStrLn $ "Different: " ++ show x
+                                             putStrLn $ show $ pretty tree
                                              exitFailure

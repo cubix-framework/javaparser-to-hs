@@ -1,7 +1,9 @@
 /*
  * From http://www.javaspecialists.eu/archive/Issue033.html
- /
+ */
 
+import java.lang.reflect.InvocationTargetException;
+ 
 /**
 The ExceptionConverter changes a checked exception into an
 unchecked exception.
@@ -44,6 +46,8 @@ public class ExceptionConverter extends RuntimeException {
     synchronized (s) {
       s.print("ExceptionConverter: ");
       ex.printStackTrace(s);
+      if(ex instanceof InvocationTargetException)
+          ((InvocationTargetException)ex).getCause().printStackTrace();
     }
   }
   /** Again, we prefix the stack trace with "ExceptionConverter:" */
@@ -51,6 +55,8 @@ public class ExceptionConverter extends RuntimeException {
     synchronized (s) {
       s.print("ExceptionConverter: ");
       ex.printStackTrace(s);
+      if(ex instanceof InvocationTargetException)
+          ((InvocationTargetException)ex).getCause().printStackTrace();
     }
   }
   /** requests to fill in the stack trace we will have to ignore
