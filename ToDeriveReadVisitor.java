@@ -1109,7 +1109,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     }
 
     public void visit(LongLiteralExpr n, Object _) {
-        output("(Lit (Int ");
+        output("(Lit (WWord ");
         output(Long.toString(parseJavaInt(n.getValue()).longValue()));
         output("))");
     }
@@ -1121,7 +1121,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     }
 
     public void visit(LongLiteralMinValueExpr n, Object _) {
-        output("(Lit (Int ");
+        output("(Lit (Word ");
         output(NumberUtils.createNumber(n.getValue()).toString());
         output("))");
     }
