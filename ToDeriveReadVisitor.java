@@ -1109,7 +1109,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     }
 
     public void visit(LongLiteralExpr n, Object _) {
-        output("(Lit (WWord ");
+        output("(Lit (Word ");
         output(Long.toString(parseJavaInt(n.getValue()).longValue()));
         output("))");
     }
