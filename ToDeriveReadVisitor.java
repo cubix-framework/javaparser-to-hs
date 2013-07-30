@@ -350,7 +350,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("TypeParameter", wrap("TypeParam", id(f("Name")), list(wrap("ClassRefType", f("TypeBound")))));
                 put("_InterfaceDeclaration", wrap("InterfaceDecl",
                                                   special(f("Modifiers"), "printModifiers"), id(f("Name")), list(f("TypeParameters")),
-                                                  list(wrap("ClassRefType", f("Implements"))),
+                                                  list(wrap("ClassRefType", f("Extends"))),
                                                   wrap("InterfaceBody", list(special(f("Members"), "printMemberDecl")))));
                 put("_ClassDeclaration", wrap("ClassDecl",
                                               special(f("Modifiers"), "printModifiers"), id(f("Name")), list(f("TypeParameters")),
