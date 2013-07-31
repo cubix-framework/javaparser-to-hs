@@ -1002,6 +1002,8 @@ public class ToDeriveReadVisitor implements VoidVisitor {
 
         output("(ClassType [");
 
+        List<Type> prevTypeArgs = null;
+        
         String sep = "";
         for(ClassOrInterfaceType c : qualifiers) {
             output(sep);
@@ -1009,7 +1011,21 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             output("(");
             printIdent(c.getName());
             output(", ");
-            list(special(f("TypeArgs"), "printTypeArg")).printValueFor(c);
+
+            /*
+             * javaparser misparses "A<T>.B" as "A<T>.B<T>". However,
+             * in that case, it reuses the same type argument list for both
+             * A and B. We can thus hack around this by checking for address-equality
+             * of the lists.
+             */
+            if(c.getTypeArgs() == prevTypeArgs) {
+                output("[]");
+            } else {
+                list(special(f("TypeArgs"), "printTypeArg")).printValueFor(c);
+            }
+
+            prevTypeArgs = c.getTypeArgs();
+            
             output(")");
         }
 
