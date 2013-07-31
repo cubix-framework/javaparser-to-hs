@@ -1151,12 +1151,12 @@ public class ToDeriveReadVisitor implements VoidVisitor {
     public void visit(DoubleLiteralExpr n, Object _) {
         Number num = NumberUtils.createNumber(n.getValue());
         output("(Lit ");
-        if(n instanceof Float) {
+        if(num instanceof Float) {
             output("(Float ");
         } else {
             output("(Double ");
         }
-        output(n.toString());
+        output(num.toString());
         output("))");
     }
 
