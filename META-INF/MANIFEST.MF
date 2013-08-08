@@ -1,2 +1,2 @@
 Main-Class: JavaparserToHS
-Class-Path: commons-lang3-3.1.jar javaparser-1.0.8.jar
+Class-Path: commons-lang3-3.2-SNAPSHOT.jar javaparser-1.0.8.jar

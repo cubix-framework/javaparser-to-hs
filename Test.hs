@@ -78,9 +78,8 @@ main = do fil <- liftM head $ getArgs
           case res of
                Left _     -> exitFailure
                Right tree -> let reread = map unL $ lexer $ show $ pretty tree in
-                         do  putStrLn $ show $ pretty tree
                              case lexicalDifference reread origStream of
                                Nothing -> return ()
-                               Just x  -> do putStrLn $ "Different: " ++ show x
-                                             putStrLn $ show $ pretty tree
+                               Just x  -> do putStrLn $ fil ++ ": Different: " ++ show x
+--                                             putStrLn $ show $ pretty tree
                                              exitFailure
