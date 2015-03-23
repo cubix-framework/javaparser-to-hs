@@ -266,6 +266,26 @@ public class ToDeriveReadVisitor implements VoidVisitor {
         return l;
     }
 
+    private static class SingletonListField extends RawField {
+        private NodeField field;
+
+        protected Object getValueFrom(Object n) {
+            return field.getValueFrom(n);
+        }
+
+        protected void printValue(Object x) {
+            output("[");
+            field.printValue(x);
+            output("]");
+        }
+    }
+
+    protected static SingletonListField singletonList(NodeField f) {
+        SingletonListField l = new SingletonListField();
+        l.field = f;
+        return l;
+    }
+
     private static class SpecialField extends RawField {
         private NodeField field;
         private Method printer;
@@ -373,7 +393,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("Parameter", wrap("FormalParam", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), f("VarArgs"), f("Id")));
                 put("InitializerDeclaration", wrap("InitDecl", f("Static"), f("Block")));
                 put("PrimitiveType", wrap("PrimType", special(f("Type"), "printPrimitive")));
-                put("ArrayAccessExpr", wrap("ArrayAccess", wrap("ArrayIndex", f("Name"), f("Index"))));
+                put("ArrayAccessExpr", wrap("ArrayAccess", wrap("ArrayIndex", f("Name"), singletonList(f("Index")))));
                 put("_ArrayAccessLhs", wrap("ArrayLhs", wrap("ArrayIndex", f("Name"), f("Index"))));
                 put("_ArrayCreate", wrap("ArrayCreate", special(f("Type"), "printType"), list(f("Dimensions")), f("ArrayCount")));
                 put("_ArrayCreateInit", wrap("ArrayCreateInit", special(f("Type"), "printType"), f("ArrayCount"), wrap("ArrayInit", f("Initializer"))));
