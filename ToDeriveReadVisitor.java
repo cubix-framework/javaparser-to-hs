@@ -198,6 +198,24 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             }
         }
     }
+
+    private static class ConstField extends NodeField {
+        private String value;
+
+        protected Object getValueFrom(Object n) {
+            return value;
+        }
+
+        protected void printValue(Object x) {
+            output((String)x);
+        }
+    }
+
+    private static ConstField constant(String s) {
+        ConstField c = new ConstField();
+        c.value = s;
+        return c;
+    }
         
     protected static MaybeField maybe(NodeField f) {
         MaybeField m = new MaybeField();
@@ -388,7 +406,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                                                    list(f("TypeParameters")), id(f("Name")), list(f("Parameters")),
                                                    list(special(f("Throws"), "printExceptionType")), special(f("Block"), "printConstructorBody")));
                 put("MethodDeclaration", wrap("MethodDecl", special(f("Modifiers"), "printModifiers"), list(f("TypeParameters")), special(f("Type"), "printVoidableType"),
-                                              id(f("Name")), list(f("Parameters")), list(special(f("Throws"), "printExceptionType")),
+                                              id(f("Name")), list(f("Parameters")), list(special(f("Throws"), "printExceptionType")), constant("Nothing"),
                                               wrap("MethodBody", maybe(f("Body")))));
                 put("Parameter", wrap("FormalParam", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), f("VarArgs"), f("Id")));
                 put("InitializerDeclaration", wrap("InitDecl", f("Static"), f("Block")));
