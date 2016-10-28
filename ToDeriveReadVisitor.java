@@ -426,7 +426,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("_SuperFieldAccess", wrap("SuperFieldAccess", id(f("Field"))));
                 put("InstanceOfExpr", wrap("InstanceOf", f("Expr"), f("Type")));
                 put("BooleanLiteralExpr", wrap("Lit", wrap("Boolean", f("Value"))));
-                put("_InstanceCreation", wrap("InstanceCreation", list(special(f("TypeArgs"), "printTypeArg")), f("Type"), list(f("Args")), maybe(wrap("ClassBody", list(special(f("AnonymousClassBody"), "printDecl"))))));
+                put("_InstanceCreation", wrap("InstanceCreation", list(special(f("TypeArgs"), "printTypeArg")), wrap("TypeDeclSpecifier", f("Type")), list(f("Args")), maybe(wrap("ClassBody", list(special(f("AnonymousClassBody"), "printDecl"))))));
                 put("_QualInstanceCreation", wrap("QualInstanceCreation", f("Scope"), list(special(f("TypeArgs"), "printTypeArg")), special(f("Type"), "printClassTypeID"), list(f("Args")), maybelist(f("AnonymousClassBody"))));
                 put("VariableDeclarationExpr", wrap("LocalVars", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), list(f("Vars"))));
                 put("_ForLocalVars", wrap("ForLocalVars", special(f("Modifiers"), "printModifiers"), special(f("Type"), "printType"), list(f("Vars"))));
@@ -525,7 +525,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
             dispatchVisit(n, "_EnumDeclaration");
             output(")");
         } else {
-            throw new IllegalArgumentException("Unsupported node passed to printMemberDecl");
+            throw new IllegalArgumentException("Unsupported node passed to printMemberDecl: " + n);
         }
             
     }
@@ -599,7 +599,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
         }
         if(ModifierSet.isSynchronized(m)) {
             output(sep); sep = ", ";
-            output("Synchronised"); // "Synchronized" refers to the type of statement
+            output("Synchronized_"); // "Synchronized" refers to the type of statement
         }
         if(ModifierSet.isTransient(m)) {
             output(sep); sep = ", ";
