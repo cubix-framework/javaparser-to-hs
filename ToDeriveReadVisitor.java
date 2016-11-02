@@ -412,7 +412,7 @@ public class ToDeriveReadVisitor implements VoidVisitor {
                 put("InitializerDeclaration", wrap("InitDecl", f("Static"), f("Block")));
                 put("PrimitiveType", wrap("PrimType", special(f("Type"), "printPrimitive")));
                 put("ArrayAccessExpr", wrap("ArrayAccess", wrap("ArrayIndex", f("Name"), singletonList(f("Index")))));
-                put("_ArrayAccessLhs", wrap("ArrayLhs", wrap("ArrayIndex", f("Name"), f("Index"))));
+                put("_ArrayAccessLhs", wrap("ArrayLhs", wrap("ArrayIndex", f("Name"), singletonList(f("Index")))));
                 put("_ArrayCreate", wrap("ArrayCreate", special(f("Type"), "printType"), list(f("Dimensions")), f("ArrayCount")));
                 put("_ArrayCreateInit", wrap("ArrayCreateInit", special(f("Type"), "printType"), f("ArrayCount"), wrap("ArrayInit", f("Initializer"))));
                 put("ArrayInitializerExpr", list(special(f("Values"), "printVarInit")));
